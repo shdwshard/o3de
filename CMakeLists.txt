@@ -15,6 +15,8 @@ if(NOT ${CMAKE_VERSION} VERSION_LESS "3.24")
     # (NEW) set the file timestamps to the time of extraction (recommended)
     cmake_policy(SET CMP0135 NEW) 
 endif()
+add_compile_options(-Wno-deprecated-declarations)
+set(O3DE_EXTRA_CXX_FLAGS "${O3DE_EXTRA_CXX_FLAGS} -fno-relaxed-template-template-args -Wno-deprecated-no-relaxed-template-template-args -Wno-dev")
 
 include(cmake/LySet.cmake)
 include(cmake/GeneralSettings.cmake)

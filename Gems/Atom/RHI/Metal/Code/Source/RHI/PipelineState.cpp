@@ -100,7 +100,7 @@ namespace AZ
                 {
                     //In case byte code was not generated try to create the lib with source code
                     MTLCompileOptions* compileOptions = [MTLCompileOptions alloc];
-                    compileOptions.fastMathEnabled = YES;
+                    compileOptions.mathMode = MTLMathModeFast;
                     compileOptions.languageVersion = MTLLanguageVersion2_2;
                     lib = [mtlDevice newLibraryWithSource:source
                                                   options:compileOptions
@@ -173,7 +173,7 @@ namespace AZ
             m_renderPipelineDesc.vertexFunction = ExtractMtlFunction(device.GetMtlDevice(), descriptor.m_vertexFunction.get());
             AZ_Assert(m_renderPipelineDesc.vertexFunction, "Vertex mtlFuntion can not be null");
             m_renderPipelineDesc.fragmentFunction = ExtractMtlFunction(device.GetMtlDevice(), descriptor.m_fragmentFunction.get());
-            
+
             RHI::Format depthStencilFormat = attachmentsConfiguration.GetDepthStencilFormat();
             if(descriptor.m_renderStates.m_depthStencilState.m_stencil.m_enable || IsDepthStencilMerged(depthStencilFormat))
             {
@@ -226,7 +226,7 @@ namespace AZ
                 m_renderPipelineDesc = nil;
             }
             
-             
+
             m_pipelineStateMultiSampleState = descriptor.m_renderStates.m_multisampleState;
             
             //Cache the rasterizer state
@@ -279,7 +279,7 @@ namespace AZ
                 [m_computePipelineDesc release];
                 m_computePipelineDesc = nil;
             }
-            
+
             if (m_computePipelineState)
             {
                 m_pipelineLayout = AZStd::move(pipelineLayout);
