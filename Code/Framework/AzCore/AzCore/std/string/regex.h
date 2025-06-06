@@ -2367,6 +2367,11 @@ namespace AZStd
         bool _Atend() const { return (m_regEx == 0); }
 
     private:
+        void _Adopt(const regex_type* regEx)
+        {
+            m_regEx = regEx; // Attach regex to iterator
+        }
+
         BidirectionalIterator m_begin, m_end;           // input sequence
         const regex_type* m_regEx;      // pointer to basic_regex object
         regex_constants::match_flag_type m_flags;

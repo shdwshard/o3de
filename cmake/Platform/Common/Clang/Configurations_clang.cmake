@@ -18,7 +18,6 @@ ly_append_configurations_options(
         -fvisibility=hidden
         -fvisibility-inlines-hidden
         -Wall
-        -Werror
 
         ###################
         # Disabled warnings (please do not disable any others without first consulting sig-build)

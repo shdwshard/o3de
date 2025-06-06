@@ -12,29 +12,38 @@ set(LY_LINK_OPTIONS
 )
 
 # Add resources and app icons to launchers
-list(APPEND candidate_paths ${project_real_path}/Resources/Platform/iOS)
-list(APPEND candidate_paths ${project_real_path}/Gem/Resources/Platform/iOS) # Legacy projects
-list(APPEND candidate_paths ${project_real_path}/Gem/Resources/IOSLauncher) # Legacy projects
-foreach(resource_path IN LISTS candidate_paths)
-    if(EXISTS ${resource_path})
-        set(ly_game_resource_folder ${resource_path})
-        break()
+# Skip resource check for generic launchers (when building the O3DE framework itself)
+if(NOT DEFINED launcher_generator_BUILD_GENERIC OR NOT launcher_generator_BUILD_GENERIC)
+    list(APPEND candidate_paths ${project_real_path}/Resources/Platform/iOS)
+    list(APPEND candidate_paths ${project_real_path}/Gem/Resources/Platform/iOS) # Legacy projects
+    list(APPEND candidate_paths ${project_real_path}/Gem/Resources/IOSLauncher) # Legacy projects
+    foreach(resource_path IN LISTS candidate_paths)
+        if(EXISTS ${resource_path})
+            set(ly_game_resource_folder ${resource_path})
+            break()
+        endif()
+    endforeach()
+
+    if(NOT EXISTS ${ly_game_resource_folder})
+        list(JOIN candidate_paths " " formatted_error)
+        message(FATAL_ERROR "Missing 'Resources' folder. Candidate paths tried were: ${formatted_error}")
     endif()
-endforeach()
 
-if(NOT EXISTS ${ly_game_resource_folder})
-    list(JOIN candidate_paths " " formatted_error)
-    message(FATAL_ERROR "Missing 'Resources' folder. Candidate paths tried were: ${formatted_error}")
+    # Only add resources if we found them
+    target_sources(${project_name}.GameLauncher PRIVATE ${ly_game_resource_folder}/Images.xcassets)
+    set_target_properties(${project_name}.GameLauncher PROPERTIES
+        MACOSX_BUNDLE_INFO_PLIST ${ly_game_resource_folder}/Info.plist
+        RESOURCE ${ly_game_resource_folder}/Images.xcassets
+        XCODE_ATTRIBUTE_ASSETCATALOG_COMPILER_APPICON_NAME ${project_name}AppIcon
+        XCODE_ATTRIBUTE_ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME LaunchImage
+    )
+else()
+    # For generic launchers, set minimal properties without resources
+    set_target_properties(${project_name}.GameLauncher PROPERTIES
+        XCODE_ATTRIBUTE_ASSETCATALOG_COMPILER_APPICON_NAME ${project_name}AppIcon
+        XCODE_ATTRIBUTE_ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME LaunchImage
+    )
 endif()
-
-
-target_sources(${project_name}.GameLauncher PRIVATE ${ly_game_resource_folder}/Images.xcassets)
-set_target_properties(${project_name}.GameLauncher PROPERTIES
-    MACOSX_BUNDLE_INFO_PLIST ${ly_game_resource_folder}/Info.plist
-    RESOURCE ${ly_game_resource_folder}/Images.xcassets
-    XCODE_ATTRIBUTE_ASSETCATALOG_COMPILER_APPICON_NAME ${project_name}AppIcon
-    XCODE_ATTRIBUTE_ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME LaunchImage
-)
 
 set(layout_tool_dir ${LY_ROOT_FOLDER}/cmake/Tools)
 
