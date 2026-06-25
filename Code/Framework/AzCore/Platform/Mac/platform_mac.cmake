@@ -8,9 +8,11 @@
 
 find_library(APPKIT_LIBRARY AppKit)
 find_library(FOUNDATION_LIBRARY Foundation)
+find_library(APPLICATION_SERVICES_LIBRARY ApplicationServices)
 
 set(LY_BUILD_DEPENDENCIES
     PUBLIC
         ${APPKIT_LIBRARY}
         ${FOUNDATION_LIBRARY}
+        ${APPLICATION_SERVICES_LIBRARY}
 )
