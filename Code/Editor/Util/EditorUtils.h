@@ -114,8 +114,9 @@ namespace EditorUtils
         TScopedVariableValue(TScopedVariableValue&& tInput)
         {
             m_pVariable = tInput.m_pVariable;
-            m_tConstructValue = tInput.m_tConstructValue;
-            m_tDestructValue = tInput.m_tDestructValue;
+            m_tConstructValue = std::move(tInput.m_tConstructValue);
+            m_tDestructValue = std::move(tInput.m_tDestructValue);
+            tInput.m_pVariable = nullptr;
         }
 
         // Applies the scoping exit, if the variable is valid.
