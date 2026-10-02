@@ -17,10 +17,16 @@ endif()
 # Add resources and app icons to launchers
 # Skip resource check for generic launchers (when building the O3DE framework itself)
 if(NOT DEFINED launcher_generator_BUILD_GENERIC OR NOT launcher_generator_BUILD_GENERIC)
-    list(APPEND candidate_paths ${LY_ROOT_FOLDER}/Templates/MinimalProject/Template/Resources/Platform/Mac)
     list(APPEND candidate_paths ${project_real_path}/Resources/Platform/Mac)
     list(APPEND candidate_paths ${project_real_path}/Gem/Resources/Platform/Mac) # Legacy projects
     list(APPEND candidate_paths ${project_real_path}/Gem/Resources/MacLauncher) # Legacy projects
+    # LAST RESORT ONLY. The template's Info.plist contains PROJECT-CREATION tokens --
+    # CFBundleExecutable is "${Name}.GameLauncher" -- and ${Name} is undefined at configure
+    # time, so it expands to empty. The bundle then declares its executable as
+    # ".GameLauncher", which does not exist, and fixup_bundle rejects the whole app with
+    # "error: fixup_bundle: not a valid bundle". Listing this FIRST silently shadowed the
+    # project's own correct Info.plist.
+    list(APPEND candidate_paths ${LY_ROOT_FOLDER}/Templates/MinimalProject/Template/Resources/Platform/Mac)
     foreach(resource_path IN LISTS candidate_paths)
         if(EXISTS ${resource_path})
             set(ly_game_resource_folder ${resource_path})
