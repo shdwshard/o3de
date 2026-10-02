@@ -154,8 +154,8 @@ namespace AZ
             //
             // -[MTLCommandBuffer presentDrawable:] with nil is not tolerated: it fails an
             // internal assert and calls abort(), taking the process down with SIGABRT in
-            // MTLReportFailure. Skipping the present is correct here — there is nothing to
-            // show for this frame — and the swap chain advances as usual.
+            // MTLReportFailure. Skipping the present is correct here - there is nothing to
+            // show for this frame - and the swap chain advances as usual.
             if (m_drawables[currentImageIndex] == nil)
             {
                 return (currentImageIndex + 1) % GetImageCount();
