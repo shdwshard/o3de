@@ -145,7 +145,22 @@ namespace AZ
         uint32_t SwapChain::PresentInternal()
         {
             const uint32_t currentImageIndex = GetCurrentImageIndex();
-            
+
+            // A frame can reach Present without any scope having requested a drawable. The
+            // reproducible case is a render-pipeline rebuild mid-frame: changing
+            // r_multiSampleCount runs cvar_r_multiSample_Changed, which rebuilds the
+            // pipeline (and with it the swap chain), and the in-flight frame then presents
+            // having never called RequestDrawable.
+            //
+            // -[MTLCommandBuffer presentDrawable:] with nil is not tolerated: it fails an
+            // internal assert and calls abort(), taking the process down with SIGABRT in
+            // MTLReportFailure. Skipping the present is correct here - there is nothing to
+            // show for this frame - and the swap chain advances as usual.
+            if (m_drawables[currentImageIndex] == nil)
+            {
+                return (currentImageIndex + 1) % GetImageCount();
+            }
+
             //Preset the drawable
             Platform::PresentInternal(
                 m_mtlCommandBuffer,
