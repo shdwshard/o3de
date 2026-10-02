@@ -110,7 +110,13 @@ namespace AZ
                     scopeAttachment != nullptr;
                     scopeAttachment = scopeAttachment->GetNext())
                 {
-                    if (scopeAttachment->GetUsage() == RHI::ScopeAttachmentUsage::Shader)
+                    // Copy as well as Shader: a non-MSAA AttachmentReadback (which is what a
+                    // screenshot of the swapchain is) reads the swapchain with
+                    // UseCopyAttachment. Checking Shader alone left framebufferOnly set and the
+                    // swapchain image's memory never pointed at the current drawable, so the
+                    // readback blit read a stale texture and crashed in copyFromTexture.
+                    const RHI::ScopeAttachmentUsage usage = scopeAttachment->GetUsage();
+                    if (usage == RHI::ScopeAttachmentUsage::Shader || usage == RHI::ScopeAttachmentUsage::Copy)
                     {
                         needsImageView = true;
                         break;
